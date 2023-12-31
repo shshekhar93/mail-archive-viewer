@@ -1,13 +1,22 @@
 import { Router } from 'express'
 import { Keyword, Label, Mail, Mailbox, Recipient } from '../lib/db'
+import { sortLabels } from '../lib/utils'
 
 const mailRouter = Router()
 
 mailRouter.get('/mailbox', async (req, res) => {
-  const mailboxes = await Mailbox.findAll()
-  res.send(mailboxes?.map((id, name) => ({
-    id, name
-  })))
+  const mailboxes = (await Mailbox.findAll({
+    include: [{
+      model: Label,
+      as: 'labels',
+      attributes: ['id', 'label']
+    }]
+  })).map(mailbox => ({
+    ...mailbox.toJSON(),
+    labels: sortLabels(mailbox.labels)
+  }))
+
+  res.send(mailboxes)
 })
 
 mailRouter.get('/mailbox/:id', async (req, res) => {
@@ -19,7 +28,7 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
     include: [{
       model: Label,
       as: 'labels',
-      attributes: ['label'],
+      attributes: ['id', 'label'],
       through: {
         attributes: []
       }
@@ -38,6 +47,7 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
     limit: +(req.query.limit ?? 100),
     offset: +(req.query.offset ?? 0)
   })
+
   res.send(mails)
 })
 

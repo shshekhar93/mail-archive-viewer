@@ -1,0 +1,31 @@
+.mailbox-contents {
+  display: table;
+  list-style: none;
+}
+
+.mailbox-email {
+  display: table-row;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.mailbox-email > * {
+  display: table-cell;
+  padding: 0.5rem;
+  border-bottom: 1px solid #dedede;
+}
+
+.mailbox-email-contact {
+  white-space: nowrap;
+  max-width: min(250px, 20vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mailbox-email-content {
+  width: 100%;
+}
+
+.mailbox-email-date {
+  text-align: end;
+}

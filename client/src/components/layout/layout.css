@@ -1,0 +1,61 @@
+.layout-root {
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: 56px 1fr 56px;
+  grid-template-areas:
+  "header  header"
+  "left-nav content"
+  "footer  footer";
+  background-color: #fff;
+  color: #444;
+  height: 100vh;
+}
+
+.header {
+  grid-area: header;
+  padding: 0 1rem;
+}
+
+.left-nav {
+  grid-area: left-nav;
+  overflow: auto;
+}
+
+.content {
+  grid-area: content;
+  overflow: auto;
+}
+
+.footer {
+  grid-area: footer;
+  padding: 0 1rem;
+}
+
+
+/* Left nav */
+.left-nav ul {
+  /* Clear out default list styles */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.left-nav ul li {
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border-radius: 15px;
+}
+
+.left-nav ul li.active {
+  background-color: #dedede;
+}
+
+.left-nav ul li:hover {
+  background-color: #dedede;
+}
+
+.left-nav ul a {
+  display: block;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+}

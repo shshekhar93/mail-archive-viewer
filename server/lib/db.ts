@@ -46,13 +46,14 @@ Mailbox.init({
 export class Mail extends Model<InferAttributes<Mail>, InferCreationAttributes<Mail>> {
   declare id: CreationOptional<number>
   declare messageId: string | undefined
-  declare threadId: bigint
+  declare threadId: string
   declare messageTime: Date
   declare subject: string
   declare senderName: string
   declare senderEmail: string
   declare hasAttachments: boolean
   declare fileOffset: number
+  declare isSentEmail: boolean
 
   declare mailboxId: ForeignKey<Mailbox['id']>
 
@@ -79,13 +80,14 @@ Mail.init({
     primaryKey: true
   },
   messageId: DataTypes.TEXT,
-  threadId: DataTypes.NUMBER,
+  threadId: DataTypes.TEXT,
   messageTime: DataTypes.DATE,
   subject: DataTypes.TEXT,
   senderName: DataTypes.TEXT,
   senderEmail: DataTypes.TEXT,
   hasAttachments: DataTypes.BOOLEAN,
-  fileOffset: DataTypes.INTEGER
+  fileOffset: DataTypes.INTEGER,
+  isSentEmail: DataTypes.BOOLEAN
 }, {
   sequelize,
   tableName: 'mails',

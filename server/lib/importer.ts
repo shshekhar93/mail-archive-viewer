@@ -44,8 +44,9 @@ export async function importMbox (path: string): Promise<void> {
           })
           console.log('shshekhar:::: email parsing started', parsed.messageId)
 
-          const threadId = BigInt(parsed.headers.get(X_GMAIL_THREAD_ID)?.toString() ?? '')
+          const threadId = parsed.headers.get(X_GMAIL_THREAD_ID)?.toString() ?? ''
           const hasAttachments = !(parsed.attachments.length === 0)
+          let isSentEmail = false
 
           // Save the labels
           const labelStr = parsed.headers.get(X_GMAIL_LABELS)
@@ -53,6 +54,9 @@ export async function importMbox (path: string): Promise<void> {
           const labelModels = []
           for (const label of labels) {
             labelModels.push(await findOrCreateLabel(mailBox.id, label))
+            if (label === 'Sent') {
+              isSentEmail = true
+            }
           }
 
           // Save the recipients
@@ -107,7 +111,8 @@ export async function importMbox (path: string): Promise<void> {
             senderEmail: parsed.from?.value?.[0].address ?? '',
             senderName: parsed.from?.value?.[0].name ?? '',
             subject: parsed.subject ?? '<No subject>',
-            mailboxId: mailBox.id
+            mailboxId: mailBox.id,
+            isSentEmail
           });
           (labelModels.length > 0) && await mailModel.addLabels(labelModels)
           ;(recipientModels.length > 0) && await mailModel.addRecipients(recipientModels)

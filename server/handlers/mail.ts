@@ -20,7 +20,8 @@ mailRouter.get('/mailbox', async (req, res) => {
 })
 
 mailRouter.get('/mailbox/:id', async (req, res) => {
-  const searchTerms = typeof req.query.search === 'string' ? req.query.search.split(/\s+/) : []
+  const search = req.query.search
+  const searchTerms = (typeof search === 'string' && search !== '') ? search.split(/\s+/) : []
   const mails = await Mail.findAll({
     where: {
       mailboxId: req.params.id
@@ -45,7 +46,10 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
       }
     }],
     limit: +(req.query.limit ?? 100),
-    offset: +(req.query.offset ?? 0)
+    offset: +(req.query.offset ?? 0),
+    order: [
+      ['messageTime', 'DESC']
+    ]
   })
 
   res.send(mails)

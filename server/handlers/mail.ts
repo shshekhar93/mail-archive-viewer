@@ -20,8 +20,9 @@ mailRouter.get('/mailbox', async (req, res) => {
 })
 
 mailRouter.get('/mailbox/:id', async (req, res) => {
-  const search = req.query.search
+  const { search, label } = req.query
   const searchTerms = (typeof search === 'string' && search !== '') ? search.split(/\s+/) : []
+
   const mails = await Mail.findAll({
     where: {
       mailboxId: req.params.id
@@ -32,6 +33,9 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
       attributes: ['id', 'label'],
       through: {
         attributes: []
+      },
+      where: {
+        ...(typeof label === 'string' ? { id: +label } : {})
       }
     }, {
       model: Recipient,

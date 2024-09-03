@@ -97,12 +97,11 @@ const createBootstrapAction = (set: SetState) => {
 
 const createFilterAction = (set: SetState, get: GetState) => {
   return async (filters: Partial<FiltersT>) : Promise<void> => {
-    // Retain old mailboxId if user didn't attempt to update it.
-    if(filters.mailboxId === undefined) {
-      filters.mailboxId = get().filters.mailboxId;
-    }
-
-    const newFilters = createFilter(filters);
+    const newFilters = createFilter({
+      ...get().filters,
+      ...filters,
+    });
+    
     set({
       filters: newFilters,
     });

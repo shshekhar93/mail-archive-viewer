@@ -4,6 +4,7 @@
   "description": "Mail Archive Viewer for emails stored in mbox format",
   "main": "index.js",
   "scripts": {
+    "start": "concurrently --kill-others \"cd server && npm start\" \"cd client && npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install"
   },
@@ -25,6 +26,7 @@
   },
   "homepage": "https://github.com/shshekhar93/mail-archive-viewer#readme",
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0"
   }

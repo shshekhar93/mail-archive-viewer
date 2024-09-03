@@ -44,15 +44,17 @@
 
 .left-nav ul li {
   padding: 0.5rem 0.5rem 0.5rem 1rem;
-  border-radius: 15px;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  margin-bottom: 2px;
 }
 
 .left-nav ul li.active {
   background-color: #dedede;
 }
 
-.left-nav ul li:hover {
-  background-color: #dedede;
+.left-nav ul li:hover:not(.active) {
+  background-color: #f3f3f3;
 }
 
 .left-nav ul a {

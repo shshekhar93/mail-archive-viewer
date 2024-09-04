@@ -1,0 +1,28 @@
+.modal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #FFF;
+}
+
+.modal-header:empty, .modal-footer:empty {
+  display: none;
+}
+
+.modal-header {
+  display: grid;
+  grid-template-columns: auto 36px;
+  height: 36px;
+}
+
+.modal-close-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.75rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+}

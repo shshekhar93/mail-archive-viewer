@@ -25,8 +25,8 @@ export async function getMails(mailboxId: number, queryParams: MailsQueryParams)
   return resp.json();
 }
 
-export async function getMail(mailId: string) {
-  const resp = await fetch(`/mail/${mailId}`);
+export async function getMail(mailId: number) {
+  const resp = await fetch(`/api/mail/${mailId}`);
   if(!resp.ok) {
     throw API_ERROR;
   }

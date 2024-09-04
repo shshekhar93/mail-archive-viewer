@@ -1,6 +1,6 @@
 import { StoreApi, create } from "zustand";
 import { useShallow } from 'zustand/react/shallow';
-import { getMailboxes, getMails } from "./api";
+import { getMail, getMailboxes, getMails } from "./api";
 import { mailMapper } from "./mappers";
 
 export type FiltersT = {
@@ -40,6 +40,18 @@ export type MailT = {
   labels: string[];
 }
 
+export type AttachmentT = {
+  contentType: string;
+  content: string;
+  filename: string;
+};
+
+export type MailWithContent = MailT & {
+  content: string;
+  contentType: string;
+  attachments: AttachmentT[];
+}
+
 export type SettingsT = {
   darkMode: boolean;
   contentLengthForKeywords: number;
@@ -51,10 +63,13 @@ export type StateT = {
   filters: FiltersT;
   settings: SettingsT;
   mailboxes: MailBoxT[];
-  mails: MailT[]
+  mails: MailT[];
+  openedMail: MailWithContent | null;
 
   bootstrap: () => Promise<void>;
-  filter: (filters: Partial<FiltersT>) => Promise<void>
+  filter: (filters: Partial<FiltersT>) => Promise<void>;
+  openMail: (mail: MailT) => Promise<void>;
+  closeMail: () => Promise<void>;
 }
 
 type SetState = StoreApi<StateT>['setState'];
@@ -79,6 +94,7 @@ const defaultState = {
   },
   mailboxes: [],
   mails: [],
+  openedMail: null,
 };
 
 const createBootstrapAction = (set: SetState) => {
@@ -113,10 +129,30 @@ const createFilterAction = (set: SetState, get: GetState) => {
   }
 }
 
+const createOpenMailAction = (set: SetState, get: GetState) => {
+  return async (mail: MailT) => {
+    const { id } = mail;
+    const openedMail = await getMail(id);
+    set({
+      openedMail,
+    });
+  }
+}
+
+const createCloseMailAction = (set: SetState, get: GetState) => {
+  return async () => {
+    set({
+      openedMail: null,
+    });
+  }
+}
+
 export const useStore = create<StateT>((set, get) => ({
   ...defaultState,
   bootstrap: createBootstrapAction(set),
   filter: createFilterAction(set, get),
+  openMail: createOpenMailAction(set, get),
+  closeMail: createCloseMailAction(set, get),
 }));
 
 export const useStoreShallow = <T>(keys: Array<keyof StateT>): T => (useStore(

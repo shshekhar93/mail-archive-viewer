@@ -11,8 +11,8 @@ export function EmailsList() {
   return (
     <ul className="mailbox-contents">
       {
-        mails.map(((mail, idx) => (
-          <Email mail={mail} />
+        mails.map(((mail) => (
+          <Email key={mail.id} mail={mail} />
         )))
       }
     </ul>

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { Keyword, Label, Mail, Mailbox, Recipient } from '../lib/db'
-import { sortLabels } from '../lib/utils'
+import { readMailFromMbox, sortLabels } from '../lib/utils'
 
 const mailRouter = Router()
 
@@ -59,8 +59,51 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
   res.send(mails)
 })
 
-mailRouter.get('/mail/:id', (req, res) => {
-  res.send({})
+mailRouter.get('/mail/:id', async (req, res) => {
+  const mail = await Mail.findByPk(+req.params.id, {
+    include: [{
+      model: Label,
+      as: 'labels',
+      attributes: ['id', 'label'],
+      through: {
+        attributes: []
+      }
+    }, {
+      model: Recipient,
+      as: 'recipients',
+      attributes: ['name', 'email']
+    }, {
+      model: Mailbox
+    }]
+  })
+
+  const { path } = mail?.Mailbox ?? {}
+  const { fileOffset, size } = mail ?? {}
+  if (path === undefined || fileOffset === undefined || size === undefined) {
+    return res.status(500).send({
+      ok: false,
+      error: 'Invalid metadata'
+    })
+  }
+
+  const parsedMail = await readMailFromMbox(path, fileOffset, size)
+  const isPlainText = parsedMail.html === '' || parsedMail.html === false
+  const content = isPlainText ? parsedMail.text : parsedMail.html
+
+  const attachments = parsedMail.attachments
+    .filter(({ related }) => !related)
+    .map(attachment => ({
+      filename: attachment.filename,
+      contentType: attachment.contentType,
+      content: attachment.content.toString('base64')
+    }))
+
+  res.send({
+    ...mail?.toJSON(),
+    contentType: isPlainText ? 'text/plain' : 'text/html',
+    content,
+    attachments
+  })
 })
 
 export { mailRouter }

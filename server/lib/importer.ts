@@ -107,6 +107,7 @@ export async function importMbox (path: string): Promise<void> {
             hasAttachments,
             messageId: parsed.messageId,
             fileOffset: offset,
+            size: buf.byteLength,
             messageTime: parsed.date ?? new Date(0),
             senderEmail: parsed.from?.value?.[0].address ?? '',
             senderName: parsed.from?.value?.[0].name ?? '',

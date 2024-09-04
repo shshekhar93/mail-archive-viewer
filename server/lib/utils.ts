@@ -1,3 +1,5 @@
+import { open } from 'fs/promises'
+import { type ParsedMail, simpleParser } from 'mailparser'
 import { LABEL_ORDER } from './constants'
 import { type Label } from './db'
 
@@ -17,4 +19,26 @@ export function sortLabels (labels: Label[]): Label[] {
   })
     .filter(item => item !== null)
     .concat([...knownLabels.values()])
+}
+
+export async function readMailFromMbox (path: string, offset: number, size: number): Promise<ParsedMail> {
+  const mbox = await open(path, 'r')
+  const {
+    buffer: contents,
+    bytesRead
+  } = await mbox.read({
+    buffer: Buffer.alloc(size),
+    length: size,
+    offset: 0,
+    position: offset
+  })
+  await mbox.close()
+
+  if (bytesRead !== size) {
+    throw new Error(`Unable to read ${size} bytes, only got ${bytesRead}.`)
+  }
+
+  return await simpleParser(contents, {
+    skipTextToHtml: true
+  })
 }

@@ -53,6 +53,7 @@ export class Mail extends Model<InferAttributes<Mail>, InferCreationAttributes<M
   declare senderEmail: string
   declare hasAttachments: boolean
   declare fileOffset: number
+  declare size: number
   declare isSentEmail: boolean
 
   declare mailboxId: ForeignKey<Mailbox['id']>
@@ -60,6 +61,7 @@ export class Mail extends Model<InferAttributes<Mail>, InferCreationAttributes<M
   // Inclusions
   declare labels: NonAttribute<Label[]>
   declare recipents: NonAttribute<Recipient[]>
+  declare Mailbox: NonAttribute<Mailbox>
 
   // Associatitons
   declare static associations: {
@@ -87,6 +89,7 @@ Mail.init({
   senderEmail: DataTypes.TEXT,
   hasAttachments: DataTypes.BOOLEAN,
   fileOffset: DataTypes.INTEGER,
+  size: DataTypes.INTEGER,
   isSentEmail: DataTypes.BOOLEAN
 }, {
   sequelize,

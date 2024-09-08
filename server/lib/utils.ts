@@ -21,6 +21,13 @@ export function sortLabels (labels: Label[]): Label[] {
     .concat([...knownLabels.values()])
 }
 
+export function normalizeKeyword (keyword: string): string {
+  return keyword
+    .toLowerCase()
+    .replace(/[^a-z0-9 .-]/g, '_')
+    .replace(/_+$/g, '')
+}
+
 export async function readMailFromMbox (path: string, offset: number, size: number): Promise<ParsedMail> {
   const mbox = await open(path, 'r')
   const {

@@ -14,7 +14,7 @@ async function bootstrap (): Promise<void> {
   try {
     await connectAndSync()
   } catch (e) {
-    console.log(`An error occured while connecting to DB: ${(e as any).name}\n${(e as any).parent}`)
+    console.log(`An error occured while connecting to DB: ${(e).name}\n${(e).parent}`)
   }
 
   app.listen(port, () => {

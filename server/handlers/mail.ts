@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { Keyword, Label, Mail, Mailbox, Recipient } from '../lib/db'
-import { readMailFromMbox, sortLabels } from '../lib/utils'
+import { normalizeKeyword, readMailFromMbox, sortLabels } from '../lib/utils'
+import { Op } from 'sequelize'
 
 const mailRouter = Router()
 
@@ -21,7 +22,9 @@ mailRouter.get('/mailbox', async (req, res) => {
 
 mailRouter.get('/mailbox/:id', async (req, res) => {
   const { search, label } = req.query
-  const searchTerms = (typeof search === 'string' && search !== '') ? search.split(/\s+/) : []
+  const searchQueries = ((typeof search === 'string' && search !== '') ? search.split(/\s+/) : [])
+    .map(normalizeKeyword)
+    .map(keyword => ({ keyword: { [Op.like]: `%${keyword}%` } }))
 
   const mails = await Mail.findAll({
     where: {
@@ -46,7 +49,7 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
       as: 'keywords',
       attributes: [],
       where: {
-        ...((searchTerms.length > 0) ? { keyword: searchTerms } : {})
+        ...((searchQueries.length > 0) ? { [Op.or]: searchQueries } : {})
       }
     }],
     limit: +(req.query.limit ?? 100),

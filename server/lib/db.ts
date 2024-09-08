@@ -174,8 +174,6 @@ Label.init({
 export class Keyword extends Model<InferAttributes<Keyword>, InferCreationAttributes<Keyword>> {
   declare id: CreationOptional<number>
   declare keyword: string
-
-  declare mailId: ForeignKey<Mail['id']>
 }
 
 Keyword.init({
@@ -229,15 +227,18 @@ Recipient.belongsTo(Mail, {
   foreignKey: 'mailId'
 })
 
-// Mail : Keyword ?? One -> Many
-Mail.hasMany(Keyword, {
+// Mail : Keyword ?? Many -> Many
+Mail.belongsToMany(Keyword, {
+  through: 'MailAndKeyword',
   as: 'keywords',
-  sourceKey: 'id',
-  foreignKey: 'mailId'
+  foreignKey: 'mailId',
+  otherKey: 'keywordId'
 })
-Keyword.belongsTo(Mail, {
-  targetKey: 'id',
-  foreignKey: 'mailId'
+Keyword.belongsToMany(Mail, {
+  through: 'MailAndKeyword',
+  as: 'mails',
+  foreignKey: 'keywordId',
+  otherKey: 'mailId'
 })
 
 // Mail : Label ?? Many <-> Many

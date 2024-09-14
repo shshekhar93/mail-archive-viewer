@@ -132,7 +132,8 @@ const createFilterAction = (set: SetState, get: GetState) => {
 const createOpenMailAction = (set: SetState, get: GetState) => {
   return async (mail: MailT) => {
     const { id } = mail;
-    const openedMail = await getMail(id);
+    const openedMail = mailMapper<MailWithContent>(await getMail(id));
+    window.history.pushState({}, "", `${window.location.pathname}/mail/${id}`);
     set({
       openedMail,
     });
@@ -141,6 +142,7 @@ const createOpenMailAction = (set: SetState, get: GetState) => {
 
 const createCloseMailAction = (set: SetState, get: GetState) => {
   return async () => {
+    window.history.back();
     set({
       openedMail: null,
     });

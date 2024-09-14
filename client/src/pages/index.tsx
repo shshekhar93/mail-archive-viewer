@@ -8,6 +8,7 @@ export function AllPages() {
 
   useEffect(() => {
     bootstrap();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only required on first load.
   }, []);
 
   if(!ready) {
@@ -19,7 +20,7 @@ export function AllPages() {
       <Switch>
         <Route path="/" component={() => <Redirect to="/mailbox" />} />
         <Route path="/mailbox" component={MailboxListPage} />
-        <Route path="/mailbox/:id" component={MailBoxPage}/>
+        <Route path="/mailbox/:id" component={MailBoxPage} nest />
         <Route path="/settings" />
       </Switch>
     </Router>

@@ -32,6 +32,7 @@ export function Modal({
       iframe.contentWindow?.addEventListener('keyup', keyUp));
 
     return () => allIframes.forEach(iframe => iframe.contentWindow?.removeEventListener('keyup', keyUp));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

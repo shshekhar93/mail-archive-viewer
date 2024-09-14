@@ -1,9 +1,10 @@
-import { Redirect } from "wouter";
+import { Redirect, Route } from "wouter";
 import { useStore } from "../lib/state"
 import { MailboxList } from "../components/mailbox/list";
 import { MailboxSection } from "../components/mailbox";
 import { MailboxPageLayout } from "../components/layout";
 import { useSetupFilters } from "../lib/hooks";
+import { EmailViewer } from "../components/mailbox/email-viewer";
 
 export function MailboxListPage() {
   const filters = useStore(state => state.filters);
@@ -24,7 +25,8 @@ export function MailBoxPage() {
 
   return (
     <MailboxPageLayout>
-      <MailboxSection />
+      <Route path="/" component={MailboxSection} />
+      <Route path="/mail/:mailId" component={EmailViewer} />
     </MailboxPageLayout>
   );
 }

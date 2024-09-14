@@ -14,7 +14,8 @@
 .modal-header {
   display: grid;
   grid-template-columns: auto 36px;
-  height: 36px;
+  height: 45px;
+  padding-left: 1rem;
 }
 
 .modal-close-button {
@@ -25,4 +26,8 @@
   border: none;
   background: none;
   cursor: pointer;
+}
+
+.modal-content {
+  padding: 0 1rem;
 }

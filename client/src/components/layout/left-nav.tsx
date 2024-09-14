@@ -41,7 +41,7 @@ export function MailboxLeftNav() {
           </li>
         )}
         {collapsableLabels.length > 0 && <>
-          <a href="#" onClick={toggle}>{expanded ? 'Hide labels' : 'Show more'}</a>
+          <a href="#toggle-labels" onClick={toggle}>{expanded ? 'Hide labels' : 'Show more'}</a>
           {expanded && collapsableLabels.map(({id, label}) => 
             <li
               key={id} 

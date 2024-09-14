@@ -1,8 +1,6 @@
-import { MailT } from "./state";
-
-export function mailMapper(mail: any): MailT {
+export function mailMapper<T extends {[k : string]: any, messageTime: any}>(mail: T): Omit<T, 'messageTime'> & {messageTime: Date} {
   return {
-    ...(mail as MailT),
+    ...mail,
     messageTime: new Date(mail.messageTime),
   }
 }

@@ -1,8 +1,7 @@
 import React from 'react';
 import './layout.css';
-import { MailboxHeader } from './header';
+import { MailboxHeader } from '../common/header';
 import { MailboxLeftNav } from './left-nav';
-import { MailboxFooter } from './footer';
 
 export type MailboxPageLayoutPropsT = {
   children: React.ReactNode,
@@ -18,7 +17,6 @@ export function MailboxPageLayout({
       <div className="content">
         { children }
       </div>
-      <MailboxFooter />
     </div>
   );
 }

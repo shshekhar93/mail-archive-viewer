@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { KeyboardEvent, useCallback, useEffect } from "react";
 import { useStore } from "./state";
 import { useParams } from "wouter";
 
@@ -19,3 +19,11 @@ export function useSetupFilters() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
+
+export function useEnterPressDetection(onEnterPressed: () => void) {
+  return useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onEnterPressed();
+    }
+  }, [onEnterPressed]);
+};

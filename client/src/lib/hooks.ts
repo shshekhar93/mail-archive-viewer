@@ -20,10 +20,10 @@ export function useSetupFilters() {
   }, []);
 }
 
-export function useEnterPressDetection(onEnterPressed: () => void) {
-  return useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+export function useEnterPressDetection(onEnterPressed: (elem: HTMLElement) => void) {
+  return useCallback((e: KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Enter') {
-      onEnterPressed();
+      onEnterPressed(e.currentTarget);
     }
   }, [onEnterPressed]);
 };

@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useStore } from "../../lib/state"
+import { useEnterPressDetection } from "../../lib/hooks";
 
 export function MailboxLeftNav() {
   const mailboxId = useStore(state => state.filters.mailboxId);
@@ -20,23 +21,32 @@ export function MailboxLeftNav() {
     setExpanded(e => !e);
   }, []);
 
-  const navigateTo = useCallback((e: React.MouseEvent<HTMLLIElement>) => {
-    const labelId = +(e.currentTarget.getAttribute('data-label-id') ?? '1');
+  const onLabelSelect = useCallback((elem: HTMLElement) => {
+    const labelId = +(elem.getAttribute('data-label-id') ?? '1');
 
     filter({
       label: labelId,
     });
   }, [filter]);
 
+  const navigateTo = useCallback((e: React.MouseEvent<HTMLLIElement>) => {
+    onLabelSelect(e.currentTarget);
+  }, [onLabelSelect]);
+
+  
+  const onKeyUp = useEnterPressDetection(onLabelSelect);
+
   return (
     <div className="left-nav">
       <ul>
         {shownLabels.map(({id, label}) => 
           <li
+            tabIndex={0}
             key={id} 
             className={getLiClassName(id, selectedLabelId)} 
             data-label-id={id} 
-            onClick={navigateTo}>
+            onClick={navigateTo}
+            onKeyUp={onKeyUp}>
             {label}
           </li>
         )}
@@ -44,10 +54,12 @@ export function MailboxLeftNav() {
           <a href="#toggle-labels" onClick={toggle}>{expanded ? 'Hide labels' : 'Show more'}</a>
           {expanded && collapsableLabels.map(({id, label}) => 
             <li
+              tabIndex={0}
               key={id} 
               className={getLiClassName(id, selectedLabelId)} 
               data-label-id={id} 
-              onClick={navigateTo}>
+              onClick={navigateTo}
+              onKeyUp={onKeyUp}>
               {label}
             </li>
           )}

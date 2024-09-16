@@ -10,6 +10,8 @@ export type FiltersT = {
   from: string; // sender email
   to: string; // recipient email
   subject: string; // subject, partial search supported
+  limit: number; // Number of mail per page
+  offset: number; // Number of mails to skip
 }
 
 export type LabelT = {
@@ -64,6 +66,7 @@ export type StateT = {
   settings: SettingsT;
   mailboxes: MailBoxT[];
   mails: MailT[];
+  totalCount: number;
   openedMail: MailWithContent | null;
 
   bootstrap: () => Promise<void>;
@@ -82,6 +85,8 @@ const createFilter = (filters: Partial<FiltersT>): FiltersT => ({
   from: filters.from ?? '',
   to: filters.to ?? '',
   subject: filters.subject ?? '',
+  limit: filters.limit ?? 25,
+  offset: filters.offset ?? 0,
 });
 
 const defaultState = {
@@ -94,6 +99,7 @@ const defaultState = {
   },
   mailboxes: [],
   mails: [],
+  totalCount: 0,
   openedMail: null,
 };
 
@@ -117,14 +123,24 @@ const createFilterAction = (set: SetState, get: GetState) => {
       ...get().filters,
       ...filters,
     });
+    console.log(filters, newFilters);
     
     set({
       filters: newFilters,
     });
 
-    const mails = await getMails(newFilters.mailboxId, newFilters);
+    const {
+      mails,
+      count: totalCount
+    } = await getMails(newFilters.mailboxId, {
+      ...newFilters,
+      limit: newFilters.limit.toString(),
+      offset: newFilters.offset.toString(),
+    });
+
     set({
       mails: mails.map(mailMapper),
+      totalCount
     })
   }
 }

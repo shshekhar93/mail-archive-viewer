@@ -1,5 +1,6 @@
 import { useStore } from "../../lib/state";
 import { Email } from "./email";
+import { EmailsHeader } from "./pagination";
 
 export function EmailsList() {
   const mails = useStore(filters => filters.mails);
@@ -9,12 +10,15 @@ export function EmailsList() {
   }
 
   return (
-    <ul className="mailbox-contents">
-      {
-        mails.map(((mail) => (
-          <Email key={mail.id} mail={mail} />
-        )))
-      }
-    </ul>
+    <div className="emails-list-container">
+      <EmailsHeader />
+      <ul className="mailbox-contents">
+        {
+          mails.map(((mail) => (
+            <Email key={mail.id} mail={mail} />
+          )))
+        }
+      </ul>
+    </div>
   );
 }

@@ -39,6 +39,14 @@ export function MailboxLeftNav() {
   return (
     <div className="left-nav">
       <ul>
+        <li
+          tabIndex={0}
+          className={selectedLabelId === 0 ? 'active': ''} 
+          data-label-id={0} 
+          onClick={navigateTo}
+          onKeyUp={onKeyUp}>
+          All Mails
+        </li>
         {shownLabels.map(({id, label}) => 
           <li
             tabIndex={0}

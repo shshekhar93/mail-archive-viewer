@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { Keyword, Label, Mail, Mailbox, Recipient } from '../lib/db'
 import { normalizeKeyword, readMailFromMbox, sortLabels } from '../lib/utils'
-import { Op } from 'sequelize'
+import { type Includeable, Op } from 'sequelize'
 
 const mailRouter = Router()
 
@@ -26,11 +26,25 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
     .map(normalizeKeyword)
     .map(keyword => ({ keyword: { [Op.like]: `%${keyword}%` } }))
 
-  const mails = await Mail.findAll({
-    where: {
-      mailboxId: req.params.id
-    },
-    include: [{
+  const includes: Includeable[] = [{
+    model: Recipient,
+    as: 'recipients',
+    attributes: ['name', 'email']
+  }]
+
+  if (searchQueries.length > 0) {
+    includes.push({
+      model: Keyword,
+      as: 'keywords',
+      attributes: [],
+      where: {
+        [Op.or]: searchQueries
+      }
+    })
+  }
+
+  if (label !== undefined && label !== '0' && !isNaN(+label)) {
+    includes.push({
       model: Label,
       as: 'labels',
       attributes: ['id', 'label'],
@@ -38,20 +52,17 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
         attributes: []
       },
       where: {
-        ...(typeof label === 'string' ? { id: +label } : {})
+        id: +label
       }
-    }, {
-      model: Recipient,
-      as: 'recipients',
-      attributes: ['name', 'email']
-    }, {
-      model: Keyword,
-      as: 'keywords',
-      attributes: [],
-      where: {
-        ...((searchQueries.length > 0) ? { [Op.or]: searchQueries } : {})
-      }
-    }],
+    })
+  }
+
+  const { count, rows: mails } = await Mail.findAndCountAll({
+    distinct: true,
+    where: {
+      mailboxId: req.params.id
+    },
+    include: includes,
     limit: +(req.query.limit ?? 100),
     offset: +(req.query.offset ?? 0),
     order: [
@@ -59,7 +70,10 @@ mailRouter.get('/mailbox/:id', async (req, res) => {
     ]
   })
 
-  res.send(mails)
+  res.send({
+    mails,
+    count
+  })
 })
 
 mailRouter.get('/mail/:id', async (req, res) => {

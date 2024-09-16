@@ -7,13 +7,19 @@ Thus begun this journey. It sure does sound like an use-case other must have had
 
 # Features
 1. Basic
-   1. ✔ Import and index an mbox file [P0]
+   1. Importing Mbox file [P0]
+      1. ✔ Import and index an mbox file
+      2. Extract and save keywords from Sbject line
+      3. Save recipient / sender details as keywords (for easy search)
+      4. Normalize recipients (no duplicate recipient entry per email)
+      5. Extract CC recipients
    2. User Interface with basic features
-      1. List emails [P0]
-      2. View email content [P0]
-      3. View email sender and recipient details [P0]
+      1. ✔ List emails [P0]
+      2. ✔ View email content [P0]
+      3. ✔ View email sender and recipient details [P0]
       4. Download attachment [P0]
-   3. Group emails by Labels / Folder [P0]
+      5. View CC / BCC recipient details
+   3. ✔ Group emails by Labels / Folder [P0]
 2. Advanced
    1. Search emails
       1. By sender [P1]

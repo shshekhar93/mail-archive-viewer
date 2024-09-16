@@ -10,6 +10,8 @@ export class Mailbox extends Model<InferAttributes<Mailbox>, InferCreationAttrib
   declare id: CreationOptional<number>
   declare name: string
   declare path: string
+  declare parsed: boolean
+  declare parsedBytes: number
 
   // Inclusions
   declare labels: NonAttribute<Label[]>
@@ -31,7 +33,9 @@ Mailbox.init({
     primaryKey: true
   },
   name: DataTypes.STRING,
-  path: DataTypes.STRING
+  path: DataTypes.STRING,
+  parsed: DataTypes.BOOLEAN,
+  parsedBytes: DataTypes.INTEGER.UNSIGNED
 }, {
   sequelize,
   tableName: 'mailbox',

@@ -34,17 +34,32 @@ export async function importMbox (path: string): Promise<void> {
       try {
         const { name } = parse(path)
 
-        const mailBox = await Mailbox.create({
-          name,
-          path
+        const [mailBox] = await Mailbox.findOrCreate({
+          where: {
+            path
+          },
+          defaults: {
+            name,
+            path,
+            parsed: false,
+            parsedBytes: 0
+          }
         })
 
-        const parser = new MboxParser(path)
+        if (mailBox.parsed) {
+          // The mailbox file has already been parsed
+          resolve(); return
+        }
+
+        const parser = new MboxParser(path, mailBox.parsedBytes)
         parser.on('error', (err) => {
           reject(err)
         })
 
-        parser.on('end', () => {
+        parser.on('end', async () => {
+          mailBox.parsed = true
+          await mailBox.save()
+
           resolve()
         })
 
@@ -55,7 +70,6 @@ export async function importMbox (path: string): Promise<void> {
             skipTextToHtml: true,
             skipTextLinks: true
           })
-          console.log('shshekhar:::: email parsing started', parsed.messageId)
 
           const threadId = parsed.headers.get(X_GMAIL_THREAD_ID)?.toString() ?? ''
           const hasAttachments = !(parsed.attachments.length === 0)
@@ -135,13 +149,15 @@ export async function importMbox (path: string): Promise<void> {
             ;(recipientModels.length > 0) && await mailModel.addRecipients(recipientModels, { transaction })
             ;(keywordModels.length > 0) && await mailModel.addKeywords(keywordModels, { transaction })
 
+            mailBox.parsedBytes = offset + buf.byteLength
+            await mailBox.save({ transaction })
+
             await transaction.commit()
           } catch (e: any) {
             console.error('Failed to save email', e.stack)
             await transaction.rollback()
           }
 
-          console.log('shshekhar:::: email parsing ended')
           parser.resume()
         })
       } catch (e) {

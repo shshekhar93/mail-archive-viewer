@@ -32,16 +32,19 @@ export class MboxParser {
     end: []
   }
 
-  constructor (path: string) {
+  constructor (path: string, offset: number = 0) {
     this.#path = path
-    this.#currentOffset = 0
+    this.#currentOffset = offset
     this.#paused = false
     this.#queue = []
   }
 
   #startProcessing (): void {
-    this.#fsStream = createReadStream(this.#path)
     let remaining = Buffer.from([])
+
+    this.#fsStream = createReadStream(this.#path, {
+      start: this.#currentOffset
+    })
 
     this.#fsStream.on('data', (chunk: Buffer) => {
       chunk = Buffer.concat([remaining, chunk])
@@ -81,10 +84,9 @@ export class MboxParser {
       this.#emit('error', new MboxError('FS_ERROR', err))
     })
 
-    // this.#fsStream.on('end', () => {
-    //   this.processQueue();
-    //   this.#emit('end');
-    // });
+    this.#fsStream.on('end', () => {
+      this.processQueue()
+    })
   }
 
   close (err?: MboxError): void {
